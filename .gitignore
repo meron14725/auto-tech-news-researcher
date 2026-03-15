@@ -1,1 +1,21 @@
-.claude/
+# Hugo build output
+public/
+resources/_gen/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local
+
+# Node (if Hugo theme uses npm)
+node_modules/

@@ -1,0 +1,20 @@
+baseURL = 'https://example.org/'
+languageCode = 'ja'
+defaultContentLanguage = 'ja'
+title = 'Tech News Daily'
+theme = 'PaperMod'
+
+[params]
+  defaultTheme = 'auto'
+  ShowReadingTime = false
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+
+[params.homeInfoParams]
+  Title = 'Tech News Daily'
+  Content = '毎日の技術トレンドニュースを自動収集・日本語要約してお届けします'
+
+[outputs]
+  home = ['HTML', 'RSS']

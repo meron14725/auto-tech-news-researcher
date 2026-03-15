@@ -1,0 +1,32 @@
+{{ define "main" }}
+<article class="post-single">
+  <header class="post-header">
+    <h1 class="post-title">{{ .Title }}</h1>
+    <div class="post-meta">
+      {{ .Date.Format "2006年1月2日" }}
+      {{ with .Params.articles }}・{{ len . }}件の記事{{ end }}
+    </div>
+  </header>
+
+  <div class="post-content">
+    {{ range .Params.articles }}
+    <div class="article-card" style="border: 1px solid var(--border); border-radius: 8px; padding: 1.2em; margin-bottom: 1.2em;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5em;">
+        <span class="source-badge" style="background: var(--tertiary); color: var(--content); padding: 2px 8px; border-radius: 4px; font-size: 0.8em; text-transform: uppercase;">{{ .source }}</span>
+        <span style="font-size: 0.85em; color: var(--secondary);">スコア: {{ .interest_score }}/10</span>
+      </div>
+      <h3 style="margin: 0.3em 0;">
+        <a href="{{ .url }}" target="_blank" rel="noopener noreferrer">{{ .title }}</a>
+      </h3>
+      <p style="font-size: 0.85em; color: var(--secondary); margin: 0.3em 0;">{{ .original_title }}</p>
+      <p>{{ .summary }}</p>
+      <div style="display: flex; gap: 0.5em; flex-wrap: wrap;">
+        {{ range .tags }}
+        <span style="background: var(--code-bg); padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">#{{ . }}</span>
+        {{ end }}
+      </div>
+    </div>
+    {{ end }}
+  </div>
+</article>
+{{ end }}
