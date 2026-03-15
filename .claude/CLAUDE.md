@@ -20,7 +20,7 @@ Automated tech news aggregation site. Collects trending articles from multiple s
 2. `git pull origin main`
 3. `claude -p` executes the research-trend-news skill with `--allowedTools` and `--max-turns 20`
 4. Skill fetches from news sources (RSS/API via curl), filters by interest_score >= 7, generates Japanese summaries
-5. Outputs `YYYY-MM-DD.md` (YAML front matter with articles array) and updates `processed_urls.json`
+5. Outputs `YYYY-MM-DD.md` (前日の日付、YAML front matter with articles array) and updates `processed_urls.json`
 6. `git add && commit && push` to main
 7. Cloudflare Pages detects push, runs Hugo build, deploys
 

@@ -1,22 +1,21 @@
-# T-011: 記事JSON出力機能
+# T-011: 記事出力機能
+
+**ステータス**: ✅ 完了（2026-03-15）
 
 ## 概要
-フィルタリング・要約が完了した記事を `content/posts/YYYY-MM-DD.json` として出力する。
+フィルタリング・要約が完了した記事を `content/posts/YYYY-MM-DD.md` として出力する。
 
 ## やること
-- 所定の JSON スキーマに従った出力ファイルの生成
-- ファイル名を実行日の日付（`YYYY-MM-DD.json`）にする
+- 所定のフォーマットに従った出力ファイルの生成
+- ファイル名を実行日の日付（`YYYY-MM-DD.md`）にする
 - 同日に複数回実行された場合の上書き or マージ方針の決定
-- JSON の整形（pretty print）
-
-## JSON スキーマ
-```json
-{
-  "date": "YYYY-MM-DD",
-  "articles": [{ "title", "original_title", "source", "url", "summary", "tags", "interest_score" }]
-}
-```
 
 ## 完了条件
-- `content/posts/YYYY-MM-DD.json` が正しいスキーマで出力される
-- JSON が valid である（パースエラーがない）
+- `content/posts/YYYY-MM-DD.md` が正しいフォーマットで出力される
+- Hugo でビルドしてページとして表示される
+
+## 完了メモ
+- **設計変更**: 出力形式を JSON から Markdown（YAML フロントマター）に変更（T-003 で決定）
+- SKILL.md に Write ツールを使った出力手順を定義
+- 同日複数回実行時は上書き（既存ファイルがある場合はスキップ）
+- YAML フロントマター内の articles 配列に全記事データを格納
