@@ -1,31 +1,20 @@
-# T-012: デイリー実行スクリプト作成
+# T-012: デイリー実行スクリプト修正
 
-**ステータス**: ✅ 完了（2026-03-15）
+**ステータス**: ✅ 完了（2026-03-21）
 
 ## 概要
-毎日の自動実行を担う `scripts/run-daily.sh` を作成する。git pull → Claude 実行 → git push の一連の流れを自動化する。
+`scripts/run-daily.sh` から `claude -p` による AI 実行を削除し、git 操作のみのラッパーに変更する。OpenClaw エージェントがスキル実行後にこのスクリプトを呼び出す。
 
 ## やること
-- `scripts/run-daily.sh` の作成
-- 処理フロー:
-  1. `cd` でプロジェクトディレクトリに移動
-  2. `git pull origin main` で最新コード取得
-  3. `claude -p` でスキル実行（`--allowedTools`, `--max-turns 20`）
-  4. `git add content/posts/ data/processed_urls.json`
-  5. `git commit -m "Add articles for YYYY-MM-DD"`
-  6. `git push origin main`
-- エラー時の処理（スキル実行失敗時は push しない等）
-- ログ出力（`logs/` ディレクトリに日付付きログ）
+- `claude -p` の呼び出しを削除
+- git pull → 変更チェック → git add/commit/push のみ残す
+- コメントを OpenClaw 前提に更新
 
 ## 完了条件
-- スクリプトを手動実行して一連のフローが動作する
-- エラー時に不正な commit/push が行われない
-- 実行ログが残る
+- スクリプトに AI 実行の処理が含まれていない
+- git 操作のみで正常に動作する
 
 ## 完了メモ
-- `scripts/run-daily.sh` を作成（実行権限付与済み）
-- `set -euo pipefail` で厳格なエラーハンドリング
-- 各ステップ（git pull, claude -p, git push）でエラー検知 → 即時終了
-- 変更がない場合（記事0件）はコミット・プッシュをスキップ
-- ログは `logs/daily-YYYY-MM-DD.log` に出力（logs/ は .gitignore 済み）
-- `--allowedTools 'Bash(curl *),Bash(date *),Read,Write'` で最小限のツール許可
+- `claude -p` によるスキル実行（旧 Step 3）を完全に削除
+- 変更チェックを改善: `git diff` に加えて未追跡ファイル（`git ls-files --others`）もチェックするように修正
+- OpenClaw エージェントがファイル出力後にこのスクリプトを `bash scripts/run-daily.sh` で呼び出す構成

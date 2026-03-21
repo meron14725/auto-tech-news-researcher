@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # ============================================
-# run-daily.sh — 毎日の記事収集・公開スクリプト
-# cron: 15 9 * * * /path/to/scripts/run-daily.sh
+# run-daily.sh — 記事公開用 git 操作ラッパー
+# OpenClaw エージェントがスキル実行後にこのスクリプトを呼び出す
 # ============================================
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -18,7 +18,7 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-log "=== Daily article collection started ==="
+log "=== Daily git operations started ==="
 
 # 1. プロジェクトディレクトリに移動
 cd "$PROJECT_DIR"
@@ -30,26 +30,15 @@ if ! git pull origin main >> "$LOG_FILE" 2>&1; then
     exit 1
 fi
 
-# 3. Claude Code でスキル実行
-log "Running research-trend-news skill..."
-if claude -p "research-trend-news スキルを実行してください。前日のテックニュースを収集・要約して content/posts/ に出力してください。" \
-    --allowedTools 'Bash(curl *),Bash(date *),Read,Write' \
-    --max-turns 20 \
-    >> "$LOG_FILE" 2>&1; then
-    log "Skill execution completed successfully"
-else
-    log "ERROR: Skill execution failed"
-    exit 1
-fi
-
-# 4. 変更があるか確認
-if git diff --quiet HEAD -- content/posts/ data/processed_urls.json; then
-    log "No new articles generated. Skipping commit."
+# 3. 変更があるか確認
+if git diff --quiet HEAD -- content/posts/ data/processed_urls.json 2>/dev/null && \
+   [ -z "$(git ls-files --others --exclude-standard content/posts/ data/)" ]; then
+    log "No new articles found. Skipping commit."
     log "=== Daily run completed (no changes) ==="
     exit 0
 fi
 
-# 5. コミット & プッシュ
+# 4. コミット & プッシュ
 YESTERDAY=$(date -d yesterday +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d)
 log "Committing articles for $YESTERDAY..."
 
