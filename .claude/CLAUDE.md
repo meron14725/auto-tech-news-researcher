@@ -11,7 +11,7 @@ Automated tech news aggregation site. Collects trending articles from multiple s
 > アーキテクチャ図: [docs/architecture.svg](../docs/architecture.svg)
 
 - **Execution**: Hetzner Cloud CX33 (4 vCPU / 8 GB RAM, Ubuntu 24.04) runs OpenClaw Gateway as a systemd service
-- **AI Processing**: OpenClaw agent with research-trend-news skill, powered by MiniMax M2.5 API ($0.20/$0.95 per 1M tokens)
+- **AI Processing**: OpenClaw agent with research-trend-news skill, powered by MiniMax M2.5 via Token Plan Starter ($10/月, 1,500 req/5h)
 - **Scheduling**: OpenClaw built-in cron (daily JST 9:15 for articles, every 2 days JST 23:00 for skill improvement)
 - **Data**: Articles stored as `content/posts/YYYY-MM-DD.md` (YAML front matter), deduplication via `data/processed_urls.json`
 - **Site**: Hugo SSG + PaperMod theme, deployed on Cloudflare Pages (auto-builds on push to main)
@@ -75,7 +75,8 @@ articles:
 - All news sources use official APIs/RSS only — no scraping
 - Hugo chosen for minimal dependencies (Go single binary) and fast builds
 - Site must work within Cloudflare Pages free tier (20,000 files, 500 builds/month)
-- LLM API costs should stay under $5/month for daily article collection
+- MiniMax Token Plan Starter: $10/月固定（1,500 req/5h、日次記事収集+その他タスクに十分）
+- 月額合計: Hetzner $6.43 + MiniMax $10 = 約 $16.43/月
 
 ## Task Management
 
