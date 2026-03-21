@@ -79,3 +79,13 @@ sudo loginctl enable-linger deploy  # OpenClaw の systemd ユーザーサービ
 - `hugo version` が動作する
 - リポジトリがクローンされている
 - タイムゾーンが JST
+
+**ステータス**: ✅ 完了（2026-03-22）
+
+## 完了メモ
+- VPS: Hetzner CX33 (4 vCPU / 8 GB RAM), Ubuntu 24.04, Nuremberg
+- Node.js v22.22.1, Hugo v0.157.0 extended, git 2.43.0, jq 1.7
+- GitHub SSH: Deploy Key（write access）で接続確認済み
+- UFW: OpenSSH のみ許可で有効化
+- loginctl enable-linger deploy 設定済み
+- タイムゾーン: Asia/Tokyo (JST)
