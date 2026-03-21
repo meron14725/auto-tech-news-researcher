@@ -39,3 +39,12 @@ source ~/.bashrc
 ## 完了条件
 - OpenClaw エージェントが MiniMax M2.5 で応答する
 - Cloudflare 認証情報が設定済み（Phase 5 で使用）
+
+**ステータス**: ✅ 完了（2026-03-22）※ Cloudflare 認証は Phase 5 で設定予定
+
+## 完了メモ
+- MiniMax Coding Plan Starter ($10/月) を契約、APIキー (`sk-cp-*`) を取得
+- APIキーは `~/.openclaw/.env` および `openclaw.json` に設定済み
+- systemd サービスに EnvironmentFile オーバーライドで `.env` を読み込み設定
+- OpenAI互換エンドポイント (`https://api.minimax.io/v1`) で接続確認済み
+- Cloudflare 認証情報は Phase 5 (T-022〜) で設定する
