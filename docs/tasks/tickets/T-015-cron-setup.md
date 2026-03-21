@@ -1,71 +1,58 @@
-# T-015: cron ジョブ設定
+# T-015: OpenClaw cron ジョブ設定
 
 ## 概要
-VPS 上で `scripts/run-daily.sh` を毎日 JST 9:15 に自動実行する cron ジョブを設定する。
+OpenClaw の内蔵 cron 機能を使い、毎日 JST 9:15 にニュース収集を自動実行する。
 
-## 前提
-- T-013（VPS セットアップ）完了済み
-- T-014（Claude Code 認証）完了済み
-- タイムゾーンが JST に設定済み
+## 依存
+- T-012（run-daily.sh 修正）
+- T-014（認証設定）
+- T-014.5（スキル変換）
 
 ## 手順
 
-### 1. スクリプトの実行権限確認
+### 1. 日次ニュース収集 cron 登録
 ```bash
-cd /home/deploy/auto-tech-news-researcher
-chmod +x scripts/run-daily.sh
-
-# 手動で一度実行して動作確認
-./scripts/run-daily.sh
+openclaw cron add \
+  --name "daily-news-collection" \
+  --cron "15 9 * * *" \
+  --tz "Asia/Tokyo" \
+  --session isolated \
+  --message "research-trend-news スキルを実行してください。前日のテックニュースを収集・要約して content/posts/ に出力してください。完了後、scripts/run-daily.sh を実行して git commit & push してください。"
 ```
 
-### 2. cron ジョブ登録
+### 2. 登録確認
 ```bash
-crontab -e
+openclaw cron list
 ```
 
-以下を追記:
-```cron
-# 環境変数（cron はデフォルトで最小限の環境しか持たない）
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-CLAUDE_CODE_OAUTH_TOKEN=<トークン>
-
-# 毎日 JST 9:15 に記事収集
-15 9 * * * /home/deploy/auto-tech-news-researcher/scripts/run-daily.sh >> /home/deploy/auto-tech-news-researcher/logs/cron.log 2>&1
-```
-
-### 3. 登録確認
+### 3. テスト実行
+直近の時刻に一時的に変更して動作確認:
 ```bash
-crontab -l
-# → 上記のエントリが表示されること
+# ログを監視しながらテスト
 ```
 
-### 4. 動作確認
-テスト用に直近の時刻に設定して実行を確認:
+### 4. Gateway 自動起動確認
 ```bash
-# 例: 2分後に設定
-crontab -e
-# 17 14 * * * /home/deploy/...  ← 現在時刻の2分後に変更
-
-# ログを監視
-tail -f /home/deploy/auto-tech-news-researcher/logs/cron.log
-
-# 確認後、本来の時刻 (15 9) に戻す
+# VPS 再起動後も Gateway が起動することを確認
+sudo reboot
+# 再接続後
+systemctl --user status openclaw-gateway
+openclaw cron list
 ```
 
-### 5. 将来追加予定の cron（Phase 5）
-```cron
-# 2日ごと JST 23:00 にスキル改善（T-026 完了後に追加）
-# 0 23 */2 * * /home/deploy/auto-tech-news-researcher/scripts/run-improve.sh >> /home/deploy/auto-tech-news-researcher/logs/improve-cron.log 2>&1
+### 5. 将来追加予定（Phase 5 完了後）
+```bash
+# 2日ごとのスキル改善 cron（T-026 で追加）
+openclaw cron add \
+  --name "skill-improvement" \
+  --cron "0 23 */2 * *" \
+  --tz "Asia/Tokyo" \
+  --session isolated \
+  --message "..."
 ```
 
 ## 完了条件
-- `crontab -l` でジョブが登録されている
-- 指定時刻にスクリプトが自動実行される
-- ログが `logs/cron.log` に正しく出力される
-
-## トラブルシューティング
-- **cron が動かない**: `sudo systemctl status cron` でサービス稼働を確認
-- **環境変数が読めない**: crontab 内で `PATH` と `CLAUDE_CODE_OAUTH_TOKEN` を直接定義しているか確認
-- **git push 失敗**: SSH 鍵の権限（600）と ssh-agent の設定を確認
-- **claude コマンドが見つからない**: crontab の `PATH` に `/usr/local/bin` が含まれているか確認
+- `openclaw cron list` でジョブが登録されている
+- 指定時刻にスキルが自動実行される
+- 記事が生成され git push される
+- VPS 再起動後もジョブが維持される

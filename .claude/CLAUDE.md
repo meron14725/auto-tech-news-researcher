@@ -4,25 +4,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Automated tech news aggregation site. Collects trending articles from multiple sources daily, summarizes them in Japanese using Claude Code CLI skills, and publishes to a Hugo static site on Cloudflare Pages.
+Automated tech news aggregation site. Collects trending articles from multiple sources daily, summarizes them in Japanese using OpenClaw (self-hosted AI agent) + MiniMax M2.5 LLM, and publishes to a Hugo static site on Cloudflare Pages.
 
 ## Architecture
 
-- **Execution**: ConoHa VPS (Ubuntu 24.04) runs `scripts/run-daily.sh` via cron at JST 9:15 daily
-- **AI Processing**: `claude -p` with skills (`.claude/skills/research-trend-news/SKILL.md`) — runs within Claude Max 5x subscription, no API costs
+- **Execution**: Hetzner Cloud CX33 (4 vCPU / 8 GB RAM, Ubuntu 24.04) runs OpenClaw Gateway as a systemd service
+- **AI Processing**: OpenClaw agent with research-trend-news skill, powered by MiniMax M2.5 API ($0.20/$0.95 per 1M tokens)
+- **Scheduling**: OpenClaw built-in cron (daily JST 9:15 for articles, every 2 days JST 23:00 for skill improvement)
 - **Data**: Articles stored as `content/posts/YYYY-MM-DD.md` (YAML front matter), deduplication via `data/processed_urls.json`
-- **Site**: Hugo SSG, deployed on Cloudflare Pages (auto-builds on push to main)
-- **Auth**: `CLAUDE_CODE_OAUTH_TOKEN` environment variable (setup-token, 1-year validity)
+- **Site**: Hugo SSG + PaperMod theme, deployed on Cloudflare Pages (auto-builds on push to main)
+- **Feedback**: 👍👎 UI → Cloudflare Pages Function → Cloudflare KV → skill improvement loop
 
 ## Pipeline Flow
 
-1. cron triggers `run-daily.sh`
-2. `git pull origin main`
-3. `claude -p` executes the research-trend-news skill with `--allowedTools` and `--max-turns 20`
-4. Skill fetches from news sources (RSS/API via curl), filters by interest_score >= 7, generates Japanese summaries
-5. Outputs `YYYY-MM-DD.md` (前日の日付、YAML front matter with articles array) and updates `processed_urls.json`
-6. `git add && commit && push` to main
-7. Cloudflare Pages detects push, runs Hugo build, deploys
+1. OpenClaw cron triggers at JST 9:15
+2. Agent executes research-trend-news skill
+3. Skill fetches from news sources (RSS/API via curl), filters by interest_score >= 7, generates Japanese summaries
+4. Outputs `YYYY-MM-DD.md` (前日の日付、YAML front matter with articles array) and updates `processed_urls.json`
+5. Agent calls `scripts/run-daily.sh` for git pull → add → commit → push
+6. Cloudflare Pages detects push, runs Hugo build, deploys
+
+## Feedback Improvement Loop
+
+1. User rates articles with 👍👎 buttons on the site
+2. Ratings stored in Cloudflare KV via Pages Function (`/api/feedback`)
+3. Every 2 days at JST 23:00, OpenClaw cron triggers improvement
+4. `scripts/fetch-feedback.sh` pulls ratings from KV → `data/feedback.json`
+5. Agent analyzes feedback and improves SKILL.md
+6. `scripts/run-improve.sh` commits and pushes changes
 
 ## News Sources
 
@@ -31,8 +40,8 @@ Automated tech news aggregation site. Collects trending articles from multiple s
 | Hacker News | Firebase API | None | Phase 1 |
 | Zenn | RSS `/feed` | None | Phase 1 |
 | dev.to | REST API | None | Phase 1 |
-| Qiita | RSS `/popular-items/feed.atom` | None | Phase 2 |
-| Reddit | REST API | OAuth2 | Phase 2 |
+| Qiita | RSS `/popular-items/feed.atom` | None | Phase 3 |
+| Reddit | REST API | OAuth2 | Phase 3 |
 
 ## Article Data Format
 
@@ -61,10 +70,10 @@ articles:
 
 ## Key Constraints
 
-- No Anthropic API direct calls — use Claude Code CLI skills only (subscription-based)
 - All news sources use official APIs/RSS only — no scraping
 - Hugo chosen for minimal dependencies (Go single binary) and fast builds
 - Site must work within Cloudflare Pages free tier (20,000 files, 500 builds/month)
+- LLM API costs should stay under $5/month for daily article collection
 
 ## Task Management
 

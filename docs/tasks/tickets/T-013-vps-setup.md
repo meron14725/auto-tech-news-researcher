@@ -1,78 +1,61 @@
-# T-013: ConoHa VPS セットアップ
+# T-013: Hetzner CX33 セットアップ
 
 ## 概要
-ConoHa VPS（Ubuntu 24.04, 1GB）を契約・初期設定し、パイプラインが動作する環境を構築する。
+Hetzner Cloud CX33（4 vCPU / 8 GB RAM / 80 GB NVMe）をプロビジョニングし、OpenClaw が動作する環境を構築する。
 
 ## 手順
 
-### 1. VPS 契約
-1. [ConoHa](https://www.conoha.jp/) にログイン
-2. VPS → サーバー追加 → 1GB プラン（まとめトク1ヶ月 763円）
-3. OS: Ubuntu 24.04
-4. root パスワードを設定（後で SSH 鍵に切り替える）
-5. IPアドレスをメモ
+### 1. VPS プロビジョニング
+1. [Hetzner Cloud Console](https://console.hetzner.cloud/) にログイン
+2. 新規プロジェクト作成 → サーバー追加
+3. プラン: **CX33**（4 vCPU / 8 GB RAM / 80 GB NVMe）
+4. ロケーション: EU（Falkenstein or Nuremberg）
+5. OS: Ubuntu 24.04
+6. SSH 公開鍵を登録
+7. サーバー作成 → IP アドレスをメモ
 
 ### 2. SSH 初期設定
 ```bash
-# ローカル PC から接続
 ssh root@<VPS_IP>
 
 # 作業用ユーザー作成
 adduser deploy
 usermod -aG sudo deploy
 
-# SSH 鍵設定（ローカル PC で実行）
+# ローカル PC で SSH 鍵コピー
 ssh-copy-id deploy@<VPS_IP>
 
-# VPS 側: パスワード認証を無効化
+# パスワード認証無効化
 sudo vim /etc/ssh/sshd_config
 # PasswordAuthentication no
 # PermitRootLogin no
 sudo systemctl restart sshd
 ```
 
-### 3. ファイアウォール設定
+### 3. ファイアウォール
 ```bash
 sudo ufw allow OpenSSH
 sudo ufw enable
-sudo ufw status
 ```
 
-### 4. パッケージ更新 & 必要ツールのインストール
+### 4. パッケージインストール
 ```bash
 sudo apt update && sudo apt upgrade -y
+sudo apt install -y git jq
 
-# Git
-sudo apt install -y git
-
-# Node.js (Claude Code CLI の動作要件)
+# Node.js 22.x
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs
-node -v  # v22.x を確認
 
-# Claude Code CLI
-sudo npm install -g @anthropic-ai/claude-code
-claude --version
-
-# Hugo
-# Cloudflare Pages と同じバージョンを使う（hugo.toml 参照）
-wget https://github.com/gohugoio/hugo/releases/download/v0.157.0/hugo_extended_0.157.0_linux-arm64.deb
-sudo dpkg -i hugo_extended_0.157.0_linux-arm64.deb
-hugo version
-
-# jq（フィードバックスクリプトで使用）
-sudo apt install -y jq
+# Hugo（Cloudflare Pages と同じバージョン）
+wget https://github.com/gohugoio/hugo/releases/download/v0.157.0/hugo_extended_0.157.0_linux-amd64.deb
+sudo dpkg -i hugo_extended_0.157.0_linux-amd64.deb
 ```
 
-### 5. GitHub SSH 鍵設定
+### 5. GitHub SSH 鍵
 ```bash
-# VPS 上で SSH 鍵を生成
-ssh-keygen -t ed25519 -C "deploy@conoha-vps"
-
-# 公開鍵を表示 → GitHub の Settings > SSH keys に登録
-cat ~/.ssh/id_ed25519.pub
-
-# 接続テスト
+ssh-keygen -t ed25519 -C "deploy@hetzner"
+cat ~/.ssh/id_ed25519.pub  # → GitHub Settings > SSH keys に登録
 ssh -T git@github.com
 ```
 
@@ -81,22 +64,18 @@ ssh -T git@github.com
 cd /home/deploy
 git clone git@github.com:<ユーザー名>/auto-tech-news-researcher.git
 cd auto-tech-news-researcher
-git submodule update --init --recursive  # PaperMod テーマ取得
+git submodule update --init --recursive
 ```
 
-### 7. タイムゾーン設定
+### 7. タイムゾーン・systemd 設定
 ```bash
 sudo timedatectl set-timezone Asia/Tokyo
-date  # JST であることを確認
+sudo loginctl enable-linger deploy  # OpenClaw の systemd ユーザーサービス用
 ```
 
 ## 完了条件
-- SSH で VPS にログインできる
-- `claude --version` が動作する
+- SSH でログインできる
+- `node --version` が v22.x
 - `hugo version` が動作する
-- `git clone` でリポジトリをクローンできる
-- タイムゾーンが JST になっている
-
-## 注意事項
-- VPS が ARM64 か AMD64 かで Hugo のダウンロード URL が変わる。ConoHa は AMD64 なので `linux-amd64.deb` を使用
-- Node.js は LTS バージョン（22.x）を推奨
+- リポジトリがクローンされている
+- タイムゾーンが JST
