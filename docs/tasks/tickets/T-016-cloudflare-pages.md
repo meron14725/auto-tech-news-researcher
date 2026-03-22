@@ -1,5 +1,14 @@
 # T-016: Cloudflare Pages デプロイ設定
 
+**ステータス**: ✅ 完了（2026-03-22）
+
+## 完了メモ
+- Pages プロジェクト: `auto-tech-news-researcher` (`wrangler pages project create`)
+- URL: https://auto-tech-news-researcher.pages.dev/
+- 自動デプロイ: GitHub Actions (`.github/workflows/deploy.yml`) で main push 時に Hugo ビルド → wrangler deploy
+- GitHub Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` を設定済み
+- Hugo baseURL を `https://auto-tech-news-researcher.pages.dev/` に更新済み
+
 ## 概要
 GitHub リポジトリと Cloudflare Pages を連携し、main ブランチへの push をトリガーに Hugo ビルド → 自動デプロイする。
 
