@@ -12,13 +12,14 @@
 ### 2. 記事取得
 
 以下のソースから記事を取得する。各ソースで取得に失敗しても他のソースの処理は続行する。
+**各ソースから最低30件は取得**し、十分な候補を確保すること。
 
 #### Hacker News（Firebase API）
 ```bash
-# トップ30記事のIDを取得
-curl -s "https://hacker-news.firebaseio.com/v0/topstories.json" | head -c 500
+# トップ50記事のIDを取得
+curl -s "https://hacker-news.firebaseio.com/v0/topstories.json" | head -c 800
 
-# 各記事の詳細を取得（上位30件）
+# 各記事の詳細を取得（上位50件）
 curl -s "https://hacker-news.firebaseio.com/v0/item/{id}.json"
 ```
 
@@ -32,11 +33,57 @@ curl -s "https://zenn.dev/feed"
 curl -s "https://dev.to/api/articles?per_page=30&top=1"
 ```
 
-### 3. 2段階フィルタリング・スコアリング
+#### Reddit（JSON API — Tor SOCKS5 プロキシ経由）
 
-#### Step 1: 一次フィルタリング（タイトル+概要ベース）
+Hetzner IP は Reddit にブロックされているため、Tor プロキシ（127.0.0.1:9050）経由でアクセスする。
+プロンプト内で Tor の利用可否が通知される。`$TOR_AVAILABLE=no` の場合は Reddit をスキップすること。
 
-取得した全記事（〜30件×3ソース）をタイトルと概要（description）で粗くスコアリングする：
+```bash
+# Tor 経由の curl コマンドテンプレート
+REDDIT_CURL="curl -s --socks5-hostname 127.0.0.1:9050 -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)' --max-time 15"
+
+# r/programming のトップ記事
+$REDDIT_CURL "https://www.reddit.com/r/programming/top/.json?t=day&limit=30"
+
+# r/technology のトップ記事
+$REDDIT_CURL "https://www.reddit.com/r/technology/top/.json?t=day&limit=30"
+
+# r/webdev のトップ記事
+$REDDIT_CURL "https://www.reddit.com/r/webdev/top/.json?t=day&limit=20"
+```
+
+**注意事項:**
+- 429 エラーが返る場合は 5 秒待ってリトライ（最大3回）
+- `data.children[].data` から `title`, `url`, `score`, `selftext`, `subreddit` を取得
+- `is_self=true` の投稿は `selftext` が本文、`is_self=false` は `url` が外部リンク
+- Reddit のスコア（upvotes）が高い記事は面白い・話題性のある記事が多い
+
+### 3. ソース別フィルタリング・スコアリング
+
+**重要: 各ソースから均等に記事を採用すること。特定ソースに偏らない。**
+
+#### 目標件数（ソース別クォータ） — 厳守
+
+**各ソースから最低5件は必ず採用すること。**クォータ未達のソースがある場合、スコアの閾値を下げてでも件数を確保する。
+
+| ソース | 最低件数 | 目標件数 | 備考 |
+|--------|---------|---------|------|
+| Hacker News | **5件** | 7件 | 英語圏テック全般 |
+| Reddit | **5件** | 7件 | r/programming, r/technology, r/webdev |
+| Zenn | **5件** | 7件 | 日本語圏テック |
+| dev.to | **3件** | 5件 | 英語チュートリアル・体験談 |
+
+合計: **約20〜25件**
+
+**クォータ達成の手順:**
+1. 各ソースごとに独立してスコアリング・選定する
+2. まず各ソースから最低件数を確保（スコアが低くても採用）
+3. 残り枠を全ソース横断でスコア順に埋める
+4. 特定ソースが目標の2倍を超えないようバランスを取る
+
+#### Step 1: 一次フィルタリング（タイトル+概要ベース、ソース別）
+
+各ソースごとに独立してスコアリングし、**ソースごとに上位10〜15件**を Step 2 に送る。
 
 - **preliminary_score**（1-10）を付与:
   - AI/LLM/ML 関連: +3
@@ -44,28 +91,32 @@ curl -s "https://dev.to/api/articles?per_page=30&top=1"
   - DevOps/インフラ: +2
   - セキュリティ: +2
   - OSS/開発ツール: +1
-  - HN での高ポイント（100+）: +1
-  - Zenn でのトレンド入り: +1
-- **preliminary_score >= 5 の記事のみ Step 2 に進む**
+  - ユーモア・面白いプロジェクト・変わった使い方: +2
+  - コミュニティで話題（HN 100+ pt / Reddit 100+ upvotes / Zenn トレンド）: +1
+  - 開発者あるある・失敗談・体験談: +2
+- **preliminary_score >= 4 の記事のみ Step 2 に進む**（閾値を下げて候補を多く確保）
 - `processed_urls.json` に含まれる URL は除外（重複排除）
 
-#### Step 2: 二次フィルタリング（本文ベース）
+#### Step 2: 二次フィルタリング（本文ベース、ソース別）
 
-Step 1 を通過した候補記事（〜10件程度）について、記事本文を取得して詳細にスコアリングする。
+**ソースごとに独立して**候補記事の本文を取得し詳細にスコアリングする。
 
 本文取得方法:
 - **dev.to**: `https://dev.to/api/articles/{id}` の `body_html` フィールド
 - **Zenn**: 記事 URL を curl → HTML から本文抽出
 - **Hacker News**: 記事 URL を curl → HTML から本文抽出（外部サイト）
+- **Reddit**: `selftext` フィールド。外部リンクの場合は URL を curl
 
 本文取得に失敗した場合は Step 1 のスコアをそのまま使用する。
 
 本文を読んだ上で **interest_score**（1-10）を最終決定：
-- 記事の技術的な深さ・新規性を評価
-- 実用性・コミュニティへのインパクトを考慮
+- 記事の技術的な深さ・新規性
+- 実用性・コミュニティへのインパクト
+- **ユーモア・エンタメ性**（面白いプロジェクト、意外な使い方、開発者あるある）
+- 読み物としての面白さ（体験談、失敗談、議論を呼ぶ意見）
 - タイトル詐欺（釣りタイトルで中身が薄い）を検出して減点
-- **interest_score >= 7 の記事のみ採用**
-- 最終的に **最大15件** に絞り込む
+- **interest_score >= 6 の記事のみ採用**（技術的深さだけでなく面白さも評価）
+- **各ソースから目標件数を採用**してから、残り枠を全体スコア順で埋める
 
 ### 4. 日本語要約生成
 
@@ -86,7 +137,7 @@ date: YYYY-MM-DD  # 前日の日付
 articles:
   - title: "日本語タイトル"
     original_title: "Original Title"
-    source: "hn"
+    source: "hn"  # hn|zenn|devto|reddit
     url: "https://..."
     summary: "日本語要約文"
     tags: ["AI", "LLM"]

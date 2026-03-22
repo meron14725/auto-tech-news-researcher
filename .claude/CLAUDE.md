@@ -42,11 +42,11 @@ Automated tech news aggregation site. Collects trending articles from multiple s
 
 | Source | Method | Auth | Priority |
 |--------|--------|------|----------|
-| Hacker News | Firebase API | None | Phase 1 |
-| Zenn | RSS `/feed` | None | Phase 1 |
-| dev.to | REST API | None | Phase 1 |
-| Qiita | RSS `/popular-items/feed.atom` | None | Phase 3 |
-| Reddit | REST API | OAuth2 | Phase 3 |
+| Hacker News | Firebase API | None | Active |
+| Zenn | RSS `/feed` | None | Active |
+| dev.to | REST API | None | Active |
+| Reddit | JSON API (`.json` suffix) | None (User-Agent header) | Active |
+| Qiita | RSS `/popular-items/feed.atom` | None | Planned |
 
 ## Article Data Format
 
