@@ -1,0 +1,61 @@
+---
+title: "2026-03-21 のテックニュース"
+date: 2026-03-21
+articles:
+  - title: "Meta、1,600言語対応の機械翻訳モデル Omnilingual MT を発表"
+    original_title: "Meta's Omnilingual MT: Machine Translation for 1,600 Languages"
+    source: "hn"
+    url: "https://ai.meta.com/research/publications/omnilingual-mt-machine-translation-for-1600-languages/"
+    summary: "Meta が NLLB（No Language Left Behind）の成果を拡張し、200言語から1,600言語へと機械翻訳の対応範囲を大幅に拡大した研究を発表した。従来の大規模言語モデルでは対応が困難だった低リソース言語にも高品質な翻訳を提供することを目指しており、言語の多様性を維持しながら AI 翻訳の恩恵をより多くの人々に届ける取り組みとなっている。HN では126ポイントを獲得し、多言語対応の技術的課題や実用性について活発な議論が行われた。"
+    tags: ["AI", "NLP", "Machine Translation"]
+    interest_score: 8
+  - title: "ZJIT の load-store 最適化により Ruby JIT の性能が YJIT を上回るケースが出現"
+    original_title: "How ZJIT removes redundant object loads and stores"
+    source: "hn"
+    url: "https://railsatscale.com/2026-03-18-how-zjit-removes-redundant-object-loads-and-stores/"
+    summary: "Shopify の Rails at Scale ブログで、CRuby の新しい JIT コンパイラ ZJIT に実装された load-store 最適化について詳細に解説されている。ZJIT は SSA（静的単一代入）形式の HIR（高レベル中間表現）上で最適化パスを実行し、冗長なオブジェクトの読み込みと書き込みを除去する。この最適化により、setivar マイクロベンチマークで ZJIT が YJIT を上回る性能を達成した。Ruby のオブジェクトシステムにおける shape の仕組みと JIT 最適化の関係が具体的なコード例とともに説明されている。"
+    tags: ["Ruby", "JIT", "Performance"]
+    interest_score: 8
+  - title: "tinygrad の tinybox が出荷開始 — 120B パラメータ対応のオフライン AI デバイス"
+    original_title: "Tinybox – Offline AI device 120B parameters"
+    source: "hn"
+    url: "https://tinygrad.org/#tinybox"
+    summary: "tinygrad が販売するディープラーニング向けコンピュータ tinybox の出荷が開始された。tinybox red v2（$12,000、4x AMD 9070XT、778 TFLOPS）と tinybox green v2（$65,000、4x RTX PRO 6000 Blackwell、3086 TFLOPS、GPU RAM 384GB）の2モデルが在庫ありの状態で販売されている。さらに、720基の RDNA5 GPU で約1 EXAFLOP を実現する exabox（約$10M、2027年予定）も発表された。MLPerf Training 4.0 でのベンチマーク結果を踏まえ、性能対コスト比の高さを売りにしている。"
+    tags: ["AI", "Hardware", "Deep Learning"]
+    interest_score: 7
+  - title: "Tooscut — WebGPU と WASM によるブラウザ上のプロフェッショナル動画編集ツール"
+    original_title: "Professional video editing, right in the browser with WebGPU and WASM"
+    source: "hn"
+    url: "https://tooscut.app/"
+    summary: "WebGPU と WebAssembly を活用したブラウザベースの NLE（ノンリニア編集）動画エディタ Tooscut が公開された。GPU コンポジティング、キーフレームアニメーション、リアルタイムプレビューなど、デスクトップアプリ並みの機能をインストール不要で提供する。GitHub でオープンソースとして公開されており、HN では191ポイントを獲得した。WebGPU の実用的な応用例として注目されている。"
+    tags: ["WebGPU", "WASM", "Video Editing"]
+    interest_score: 7
+  - title: "Floci — 無料でオープンソースのローカル AWS エミュレータ"
+    original_title: "Floci – A free, open-source local AWS emulator"
+    source: "hn"
+    url: "https://github.com/hectorvent/floci"
+    summary: "AWS のサービスをローカル環境でエミュレートする無料のオープンソースツール Floci が公開された。LocalStack の代替として、開発者がクラウドに依存せずに AWS サービスの開発・テストを行えるようにすることを目的としている。HN では115ポイント・27件のコメントを獲得し、ローカル開発環境の効率化に関心を持つ開発者から注目を集めている。"
+    tags: ["AWS", "DevOps", "OSS"]
+    interest_score: 7
+  - title: "Trivy エコシステムのサプライチェーンが一時的に侵害される"
+    original_title: "Trivy ecosystem supply chain briefly compromised"
+    source: "hn"
+    url: "https://github.com/aquasecurity/trivy/security/advisories/GHSA-69fq-xp46-6x23"
+    summary: "コンテナやインフラのセキュリティスキャナとして広く使われている Aqua Security の Trivy において、サプライチェーンが一時的に侵害されるセキュリティインシデントが発生した。GitHub Security Advisory（GHSA-69fq-xp46-6x23）として公開されており、Trivy のエコシステムに含まれるコンポーネントが影響を受けた。セキュリティツール自体のサプライチェーンリスクを浮き彫りにする事例として、DevSecOps コミュニティで議論されている。"
+    tags: ["Security", "Supply Chain", "DevOps"]
+    interest_score: 7
+  - title: "OpenTelemetry が LLM トレーシングを標準化 — GenAI Semantic Conventions の実装ガイド"
+    original_title: "OpenTelemetry just standardized LLM tracing. Here's what it actually looks like in code."
+    source: "devto"
+    url: "https://dev.to/vola-trebla/opentelemetry-just-standardized-llm-tracing-heres-what-it-actually-looks-like-in-code-2e5f"
+    summary: "OpenTelemetry が GenAI Semantic Conventions として LLM のトレーシング標準仕様を公開した。この仕様は、chat（モデル呼び出し）、invoke_agent（エージェント起動）、execute_tool（ツール実行）の3種類の span を定義し、属性の命名規則を統一する。記事では独自形式から標準仕様への移行を実際に行った経験をもとに、span 名の形式（{operation} {name}）、エージェント属性のパス（gen_ai.agent.* ではなく gen_ai.tool.*）、コンテンツ記録の方法について具体的なコード例とともに解説している。"
+    tags: ["OpenTelemetry", "LLM", "Observability"]
+    interest_score: 7
+  - title: "JavaScript の依存関係肥大化を引き起こす3つの要因"
+    original_title: "The Three Pillars of JavaScript Bloat"
+    source: "hn"
+    url: "https://43081j.com/2026/03/three-pillars-of-javascript-bloat"
+    summary: "npm の依存関係ツリーが肥大化する3つの主要因を分析した記事。第一に、ES3 など古いランタイムのサポートやクロスレルム対応、グローバル名前空間の変更保護のための冗長なポリフィル群（is-string、math-intrinsics 等）。第二に、shebang-regex のような1行のコードでも独立パッケージにする「アトミックアーキテクチャ」思想。第三に、未使用のフィーチャーフラグやデッドコードの蓄積。e18e コミュニティの活動として、これらの不要な依存関係の「剪定」が進められている現状を紹介している。"
+    tags: ["JavaScript", "npm", "Performance"]
+    interest_score: 7
+---
