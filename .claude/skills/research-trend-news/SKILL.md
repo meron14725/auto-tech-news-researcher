@@ -100,10 +100,27 @@ articles:
 
 ## 使用ツール
 - **Bash**: curl による API/RSS アクセス、日付取得
-- **Read**: processed_urls.json の読み込み
+- **Read**: processed_urls.json の読み込み、SKILL.md の参照
 - **Write**: 記事ファイル、processed_urls.json の書き込み
 
 ## 注意事項
 - 各 API/RSS は公式エンドポイントのみ使用（スクレイピング禁止）
 - 1ソースの失敗で全体を停止しない（部分的な成功でも出力する）
 - 記事が0件の場合はファイルを生成しない
+
+## 翻訳品質ルール
+- **日本語のみで出力**すること（中国語・韓国語・ロシア語の混入は厳禁）
+- 技術用語は原語のまま保持（例: LLM, API, Kubernetes, Docker, React はそのまま）
+- カタカナ化は一般的な外来語のみ（例: サーバー, フレームワーク, パフォーマンス）
+- 要約は記事の技術的内容を**具体的に**説明すること
+  - NG: 「この記事は非常に興味深い内容を扱っています」
+  - OK: 「Rustの新しいasync runtimeであるXがtokioと比較して30%のレイテンシ改善を達成した」
+- タイトルは原題の意味を保った自然な日本語訳にすること
+
+## 実行方式
+
+本スキルは **Claude Code headless モード** (`claude -p`) で実行される。
+
+- OpenClaw が `scripts/research-tech-news.sh` を呼び出す
+- スクリプトが `claude -p` で本スキルの処理フローを実行
+- 記事出力後、`scripts/run-daily.sh` で git commit & push
