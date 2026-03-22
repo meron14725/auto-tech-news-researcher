@@ -1,5 +1,14 @@
 # T-015: OpenClaw cron ジョブ設定
 
+**ステータス**: ✅ 完了（2026-03-22）
+
+## 完了メモ
+- cron ジョブ ID: `c2224a7a-5cde-4e5b-af97-73a7a68bbd4f`
+- スケジュール: 毎日 JST 9:15（`15 9 * * *`、Asia/Tokyo）
+- セッション: isolated、stagger なし（`--exact`）
+- メッセージ: `research-tech-news.sh` → `run-daily.sh` の順次実行を指示
+- パイプライン: OpenClaw cron → Agent → bash → Claude Code headless (`claude -p`) → git push
+
 ## 概要
 OpenClaw の内蔵 cron 機能を使い、毎日 JST 9:15 にニュース収集を自動実行する。
 
