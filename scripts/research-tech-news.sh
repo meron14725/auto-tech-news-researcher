@@ -126,6 +126,17 @@ if [ -f "$PROJECT_DIR/content/posts/$YESTERDAY.md" ]; then
     log "Article file generated: content/posts/$YESTERDAY.md"
 else
     log "WARNING: No article file generated (possibly 0 articles matched criteria)"
+    log "=== Research tech news completed (no articles) ==="
+    exit 0
+fi
+
+# Git commit & push（run-daily.sh を呼び出し）
+log "Running git operations..."
+if bash "$PROJECT_DIR/scripts/run-daily.sh" >> "$LOG_FILE" 2>&1; then
+    log "Git push completed successfully."
+else
+    log "ERROR: Git push failed."
+    exit 1
 fi
 
 log "=== Research tech news completed ==="
