@@ -29,8 +29,8 @@ start_tor() {
         log "Tor binary not found. Skipping Reddit source."
         return 1
     fi
-    # 既に起動中なら再利用
-    if pgrep -f "$TOR_DIR/tor" > /dev/null 2>&1; then
+    # 既に起動中なら再利用 (Tor プロセスが any で起動している場合でも再利用)
+    if pgrep -f "tor" > /dev/null 2>&1 || ss -tlnp 2>/dev/null | grep -q ":9050 "; then
         log "Tor already running."
         return 0
     fi
