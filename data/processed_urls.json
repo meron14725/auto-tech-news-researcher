@@ -1,10 +1,4 @@
 [
-  "https://zenn.dev/xtm_blog/articles/f016695e2839ee",
-  "https://zenn.dev/yesodco/articles/yesod-jev-typesafe-inquiry-triage",
-  "https://zenn.dev/ymotongpoo/books/observability-platform-with-otel",
-  "https://zenn.dev/yosashusaku/articles/enterprise-erp-tanstack-hono-orpc",
-  "https://zenn.dev/yusukt/articles/webmcp-try",
-  "https://zenn.dev/yyamamot/articles/gpt2-to-qwen2-03-rope",
   "https://zenn.dev/zozotech/articles/0a7eb12ee4343e",
   "https://fireworks.ai/blog/ember-1",
   "https://shnatsel.github.io/state-of-simd-rust-2026/",
@@ -98,5 +92,11 @@
   "https://www.rswebsols.com/news/meta-and-microsoft-take-steps-to-reduce-employee-usage-of-claude-ai/",
   "https://dev.to/alexgeorgiev17/valkey-92s-increx-command-removes-the-crash-window-between-incr-and-expire-1344",
   "https://zenn.dev/yesodco/articles/da634d752874b2",
-  "https://dev.to/slabb/the-internets-root-key-rotates-in-five-days-your-resolver-may-not-be-ready-3j8e"
+  "https://dev.to/slabb/the-internets-root-key-rotates-in-five-days-your-resolver-may-not-be-ready-3j8e",
+  "https://deno.com/blog/cloudflare",
+  "https://www.dgt.is/blog/2026-10-07-deepseek-freek-out/",
+  "https://cactuscompute.com/blog/whistle",
+  "https://techcrunch.com/2026/10/08/fired-openai-safety-researchers-dispute-misconduct-claims-warn-of-chilling-effect/",
+  "https://htmx.org/essays/yes-and/",
+  "https://antonfrolov.substack.com/p/i-hired-an-illustrator-to-draw-my"
 ]
