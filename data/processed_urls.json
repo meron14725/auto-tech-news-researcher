@@ -453,5 +453,20 @@
   "https://dev.to/fgrandon/why-telling-an-llm-to-be-careful-doesnt-work-penalty-prompts-had-a-0-abstention-rate-49ij",
   "https://dev.to/sizzlebop/training-moe-models-is-complicated-hugging-face-just-wrote-the-manual-nih",
   "https://dev.to/tinniaru3005/i-attacked-a-real-llm-agent-with-hidden-text-heres-what-it-did-free-kaggle-notebooks-1799",
-  "https://dev.to/gde/measuring-real-world-response-latency-on-16gb-apple-silicon-for-agent-workflows-24e5"
+  "https://dev.to/gde/measuring-real-world-response-latency-on-16gb-apple-silicon-for-agent-workflows-24e5",
+  "https://deepmind.google/blog/introducing-alphaproof-code/",
+  "https://strandsagents.com/blog/amazon-saves-millions-replacing-sonnet-with-strands-decider/",
+  "https://www.vulncheck.com/blog/anthropic-glasswing-november-update",
+  "https://evanxmerz.com/post/ai-usage-generates-a-fragile-codebase/",
+  "https://arxiv.org/abs/2611.10866",
+  "https://fingerprinting.study/",
+  "https://www.blender.org/download/releases/5-3/",
+  "https://devblogs.microsoft.com/dotnet/announcing-dotnet-11/",
+  "https://blog.cloudflare.com/optimizing-core-unit-boot-time/",
+  "https://ramsayleung.github.io/en/post/2026/the_chromium_bug_caused_by_25_hour_day/",
+  "https://zenn.dev/litalico/articles/20261029-test-with-ai",
+  "https://zenn.dev/mappy55/articles/rulebook-rag-01",
+  "https://zenn.dev/painter/articles/663816c3195cec",
+  "https://dev.to/alexgeorgiev17/nodejs-26s-mapgetorinsertcomputed-is-slower-than-the-get-and-set-it-replaces-2i35",
+  "https://dev.to/aws-builders/stop-trusting-npm-scans-run-untrusted-packages-in-an-isolated-aws-sandbox-cmm"
 ]
